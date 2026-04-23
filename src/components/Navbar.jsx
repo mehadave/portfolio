@@ -1,145 +1,155 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Sun, Moon } from 'lucide-react'
+import { useScrollY } from '../hooks/useScrollY'
 import { useTheme } from '../context/ThemeContext'
 
-const LINKS = [
-  { label: 'About', href: '#about', n: '01' },
-  { label: 'Work', href: '#projects', n: '02' },
-  { label: 'Stack', href: '#skills', n: '03' },
-  { label: 'Contact', href: '#contact', n: '04' },
+const NAV_LINKS = [
+  { label: 'About', href: '#about' },
+  { label: 'Work', href: '#projects' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Contact', href: '#contact' },
 ]
 
-function formatTime(d) {
-  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
-}
-function useLocalTime() {
-  const [time, setTime] = useState(() => formatTime(new Date()))
-  useEffect(() => {
-    const id = setInterval(() => setTime(formatTime(new Date())), 1000)
-    return () => clearInterval(id)
-  }, [])
-  return time
+function NavLink({ href, label, onClick }) {
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      className="group relative text-sm font-medium text-ink-secondary dark:text-ink-secondary hover:text-ink-primary dark:hover:text-ink-primary transition-colors duration-200"
+      style={{ color: 'inherit' }}
+    >
+      <span className="relative">
+        {label}
+        <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />
+      </span>
+    </a>
+  )
 }
 
 export default function Navbar() {
+  const scrollY = useScrollY()
+  const [mobileOpen, setMobileOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
-  const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
-  const time = useLocalTime()
+  const scrolled = scrollY > 40
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
+  const bg = theme === 'dark' ? '#0a0a0a' : '#f5f4f0'
+  const textPrimary = theme === 'dark' ? '#f0efe8' : '#1a1a17'
+  const textSecondary = theme === 'dark' ? '#8a8a7e' : '#5a5a52'
 
   return (
     <>
       <motion.header
-        initial={{ y: -30, opacity: 0 }}
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed left-0 right-0 top-0 z-50 transition-all duration-500"
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          backgroundColor: scrolled ? (theme === 'dark' ? 'rgba(10,10,10,0.72)' : 'rgba(245,244,240,0.72)') : 'transparent',
-          backdropFilter: scrolled ? 'blur(14px) saturate(140%)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(14px) saturate(140%)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+          backgroundColor: scrolled ? (theme === 'dark' ? 'rgba(10,10,10,0.88)' : 'rgba(245,244,240,0.88)') : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: scrolled ? `1px solid ${theme === 'dark' ? '#1e1e1e' : '#d4d3cc'}` : '1px solid transparent',
         }}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <a href="#top" className="group flex items-center gap-3" data-cursor="link">
-            <span className="font-serif-display text-xl font-semibold text-ink">MD</span>
-            <span className="hidden h-4 w-px md:block" style={{ backgroundColor: 'var(--border)' }} />
-            <span className="eyebrow hidden md:inline">Meha Dave</span>
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          {/* Logo */}
+          <a
+            href="#"
+            className="font-serif text-xl font-semibold tracking-tight"
+            style={{ color: textPrimary }}
+          >
+            MD
           </a>
 
-          <ul className="hidden items-center gap-8 md:flex">
-            {LINKS.map(l => (
-              <li key={l.label}>
-                <a href={l.href} className="group flex items-baseline gap-1.5 link-underline text-sm text-ink" data-cursor="link">
-                  <span className="font-mono-editorial text-[10px] text-ink-dim">{l.n}</span>
-                  <span>{l.label}</span>
-                </a>
-              </li>
+          {/* Desktop links */}
+          <div className="hidden items-center gap-8 md:flex" style={{ color: textSecondary }}>
+            {NAV_LINKS.map(link => (
+              <NavLink key={link.href} {...link} />
             ))}
-          </ul>
+          </div>
 
+          {/* Right controls */}
           <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-full border px-3 py-1.5 lg:flex" style={{ borderColor: 'var(--border)' }}>
-              <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-ring" />
-              <span className="font-mono-editorial text-[10px] uppercase tracking-[0.2em] text-ink-muted">Available</span>
-              <span className="h-3 w-px" style={{ backgroundColor: 'var(--border)' }} />
-              <span className="font-mono-editorial text-[10px] tabular-nums text-ink-muted">{time}</span>
-            </div>
             <button
-              aria-label="Toggle theme"
               onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-full border text-ink-muted transition-colors hover:text-accent"
-              style={{ borderColor: 'var(--border)' }}
-              data-cursor="link"
+              className="rounded-full p-2 transition-colors duration-200"
+              style={{
+                color: textSecondary,
+                backgroundColor: 'transparent',
+              }}
+              aria-label="Toggle theme"
             >
-              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+              {theme === 'dark'
+                ? <Sun size={16} />
+                : <Moon size={16} />
+              }
             </button>
+
+            {/* Mobile hamburger */}
             <button
-              aria-label="Menu"
-              onClick={() => setOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border text-ink md:hidden"
-              style={{ borderColor: 'var(--border)' }}
+              className="rounded-full p-2 md:hidden"
+              style={{ color: textSecondary }}
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label="Toggle menu"
             >
-              <Menu size={16} />
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </nav>
       </motion.header>
 
+      {/* Mobile drawer */}
       <AnimatePresence>
-        {open && (
+        {mobileOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
+              key="overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40"
+              style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+              onClick={() => setMobileOpen(false)}
             />
-            <motion.aside
-              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed right-0 top-0 z-[61] flex h-full w-[82%] max-w-sm flex-col bg-app p-6 md:hidden"
-              style={{ borderLeft: '1px solid var(--border)' }}
+            <motion.div
+              key="drawer"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="fixed right-0 top-0 z-50 h-full w-72 flex flex-col px-8 py-8"
+              style={{
+                backgroundColor: theme === 'dark' ? '#111111' : '#ebebE4',
+                borderLeft: `1px solid ${theme === 'dark' ? '#1e1e1e' : '#d4d3cc'}`,
+              }}
             >
-              <div className="mb-10 flex items-center justify-between">
-                <span className="font-serif-display text-xl font-semibold text-ink">Menu</span>
+              <div className="flex justify-end mb-10">
                 <button
-                  aria-label="Close" onClick={() => setOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border text-ink"
-                  style={{ borderColor: 'var(--border)' }}
-                ><X size={16} /></button>
+                  onClick={() => setMobileOpen(false)}
+                  style={{ color: textSecondary }}
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <ul className="flex flex-col gap-1">
-                {LINKS.map((l, i) => (
-                  <motion.li
-                    key={l.label}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + i * 0.08, duration: 0.5, ease: 'easeOut' }}
+              <nav className="flex flex-col gap-8">
+                {NAV_LINKS.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="font-serif text-2xl font-semibold tracking-tight transition-colors duration-200"
+                    style={{ color: textPrimary }}
                   >
-                    <a href={l.href} onClick={() => setOpen(false)}
-                      className="flex items-baseline justify-between border-b py-5"
-                      style={{ borderColor: 'var(--border)' }}
-                    >
-                      <span className="font-serif-display text-3xl text-ink">{l.label}</span>
-                      <span className="font-mono-editorial text-xs text-ink-dim">{l.n}</span>
-                    </a>
-                  </motion.li>
+                    {link.label}
+                  </a>
                 ))}
-              </ul>
-              <div className="mt-auto flex items-center justify-between pt-6">
-                <span className="eyebrow">Local time</span>
-                <span className="font-mono-editorial text-xs tabular-nums text-ink-muted">{time}</span>
-              </div>
-            </motion.aside>
+              </nav>
+            </motion.div>
           </>
         )}
       </AnimatePresence>

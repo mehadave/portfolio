@@ -1,135 +1,128 @@
 import { motion } from 'framer-motion'
-import { ArrowDown } from 'lucide-react'
-import { useTheme } from '../context/ThemeContext'
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
+import MagneticButton from './MagneticButton'
 
-const container = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.18,
-      delayChildren: 0.1,
-    },
-  },
-}
-
-const item = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } },
+// Character-level reveal for the serif headline
+function SplitReveal({ text, delay = 0, className = '', italic = false }) {
+  const chars = [...text]
+  return (
+    <span className={`inline-block overflow-hidden align-baseline ${className}`} aria-label={text}>
+      {chars.map((ch, i) => (
+        <motion.span
+          key={i}
+          initial={{ y: '110%' }}
+          animate={{ y: '0%' }}
+          transition={{ duration: 0.9, delay: delay + i * 0.035, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-block"
+          style={{ fontStyle: italic ? 'italic' : 'normal' }}
+        >
+          {ch === ' ' ? '\u00A0' : ch}
+        </motion.span>
+      ))}
+    </span>
+  )
 }
 
 export default function Hero() {
-  const { theme } = useTheme()
-  const textPrimary = theme === 'dark' ? '#f0efe8' : '#1a1a17'
-  const textSecondary = theme === 'dark' ? '#8a8a7e' : '#5a5a52'
-
   return (
-    <section
-      id="hero"
-      className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
-    >
-      {/* Subtle grid lines */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: theme === 'dark'
-            ? 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)'
-            : 'linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)',
-          backgroundSize: '80px 80px',
-        }}
-      />
-
+    <section id="top" className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden pt-28">
+      {/* Corner meta — top right */}
       <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 max-w-4xl"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.6 }}
+        className="absolute right-6 top-28 hidden flex-col items-end gap-1 text-right md:flex"
       >
-        {/* Eyebrow */}
-        <motion.div variants={item} className="mb-6 flex items-center justify-center gap-3">
-          <span className="h-px w-12" style={{ backgroundColor: '#c9a84c' }} />
-          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: '#c9a84c' }}>
-            Available for work
-          </span>
-          <span className="h-px w-12" style={{ backgroundColor: '#c9a84c' }} />
-        </motion.div>
-
-        {/* Name */}
-        <motion.h1
-          variants={item}
-          className="font-serif text-6xl font-semibold leading-[1.08] tracking-tight sm:text-7xl md:text-8xl"
-          style={{ color: textPrimary }}
-        >
-          Meha Dave.
-        </motion.h1>
-
-        {/* Role */}
-        <motion.p
-          variants={item}
-          className="mt-6 text-xl font-light leading-relaxed sm:text-2xl"
-          style={{ color: textSecondary }}
-        >
-          Senior Product Engineer
-        </motion.p>
-
-        {/* Tagline */}
-        <motion.p
-          variants={item}
-          className="mx-auto mt-4 max-w-xl text-base leading-relaxed"
-          style={{ color: textSecondary, opacity: 0.75 }}
-        >
-          I build consumer software that's as beautiful as it is functional — from the first line of architecture to the last pixel of UI.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          variants={item}
-          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-        >
-          <motion.a
-            href="#projects"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="inline-flex items-center rounded-full px-7 py-3 text-sm font-medium transition-colors duration-200"
-            style={{
-              backgroundColor: '#c9a84c',
-              color: '#0a0a0a',
-            }}
-          >
-            View Work
-          </motion.a>
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="inline-flex items-center rounded-full px-7 py-3 text-sm font-medium transition-colors duration-200"
-            style={{
-              border: `1px solid ${theme === 'dark' ? '#252525' : '#d4d3cc'}`,
-              color: textSecondary,
-              backgroundColor: 'transparent',
-            }}
-          >
-            Contact Me
-          </motion.a>
-        </motion.div>
+        <span className="eyebrow">Portfolio / 2026</span>
+        <span className="font-mono-editorial text-[10px] text-ink-dim">N 40.7128° · W 74.0060°</span>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* Main block */}
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6">
+        {/* Eyebrow label */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="mb-10 flex items-center gap-3"
+        >
+          <span className="h-px w-10" style={{ backgroundColor: 'var(--accent)' }} />
+          <span className="eyebrow text-accent">Senior Software Engineer · Est. 2020</span>
+        </motion.div>
+
+        {/* Display name */}
+        <h1 className="font-serif-display text-[14vw] font-medium leading-[0.95] text-ink md:text-[11vw] lg:text-[180px]">
+          <span className="block">
+            <SplitReveal text="Meha" delay={0.15} />
+          </span>
+          <span className="block text-accent">
+            <SplitReveal text="Dave." delay={0.42} italic />
+          </span>
+        </h1>
+
+        {/* Sub row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 1.05, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-12"
+        >
+          <div className="md:col-span-7">
+            <p className="max-w-xl text-pretty text-lg leading-relaxed text-ink-muted md:text-xl">
+              I design and build consumer software end-to-end — from systems architecture down to the last pixel of UI. Currently taking on select engagements.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 md:col-span-5 md:justify-end">
+            <MagneticButton
+              as="a"
+              href="#projects"
+              className="group inline-flex items-center gap-3 rounded-full px-6 py-3.5 text-sm font-medium"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)' }}
+              data-cursor="link"
+            >
+              View Work
+              <ArrowDownRight size={16} />
+            </MagneticButton>
+            <MagneticButton
+              as="a"
+              href="#contact"
+              className="inline-flex items-center gap-3 rounded-full border px-6 py-3.5 text-sm font-medium text-ink"
+              style={{ borderColor: 'var(--border-strong)' }}
+              data-cursor="link"
+            >
+              Contact
+              <ArrowUpRight size={16} />
+            </MagneticButton>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom footer rail */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        style={{ color: textSecondary, opacity: 0.4 }}
+        transition={{ duration: 0.8, delay: 1.4 }}
+        className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 px-6 pb-10 md:flex-row md:items-end"
       >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <ArrowDown size={14} />
-        </motion.div>
+        <div className="flex items-center gap-3">
+          <span className="font-mono-editorial text-[10px] text-ink-dim">Scroll</span>
+          <span className="relative block h-8 w-px" style={{ backgroundColor: 'var(--border-strong)' }}>
+            <span className="float-down absolute left-1/2 top-0 block h-3 w-px -translate-x-1/2" style={{ backgroundColor: 'var(--accent)' }} />
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-x-10 gap-y-3 md:grid-cols-3">
+          {[
+            ['Now', 'Freelance · Remote'],
+            ['Stack', 'React · TS · Node'],
+            ['Next', 'Consumer AI tools'],
+          ].map(([k, v]) => (
+            <div key={k} className="flex flex-col">
+              <span className="eyebrow">{k}</span>
+              <span className="mt-1 text-sm text-ink">{v}</span>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </section>
   )

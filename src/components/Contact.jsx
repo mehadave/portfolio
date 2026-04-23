@@ -1,107 +1,140 @@
-import { motion } from 'framer-motion'
-import { Github, Linkedin, Twitter, Mail } from 'lucide-react'
-import { useTheme } from '../context/ThemeContext'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Github, Linkedin, Mail, Copy, Check, ArrowUpRight } from 'lucide-react'
+import MagneticButton from './MagneticButton'
 
 const SOCIALS = [
   { icon: Github, href: 'https://github.com/mehadave', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com/in/mehadave', label: 'LinkedIn' },
-  { icon: Twitter, href: 'https://twitter.com/mehadave', label: 'Twitter' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/in/meha-dave/', label: 'LinkedIn' },
 ]
 
-const EMAIL = 'davemeha60@gmail.com'
+const EMAIL = 'mehadave2@gmail.com'
 
 export default function Contact() {
-  const { theme } = useTheme()
-  const textPrimary = theme === 'dark' ? '#f0efe8' : '#1a1a17'
-  const textSecondary = theme === 'dark' ? '#8a8a7e' : '#5a5a52'
-  const borderColor = theme === 'dark' ? '#1e1e1e' : '#d4d3cc'
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {}
+  }
 
   return (
-    <section id="contact" className="mx-auto max-w-6xl px-6 py-32">
+    <section id="contact" className="mx-auto max-w-7xl px-6 py-32">
+      {/* Section header */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-100px' }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="flex flex-col items-center text-center"
+        className="mb-16 flex items-center gap-4"
       >
-        <div className="mb-12 flex items-center gap-4 w-full">
-          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: '#c9a84c' }}>
-            04 — Contact
-          </span>
-          <span className="h-px flex-1" style={{ backgroundColor: borderColor }} />
-        </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-6 text-sm uppercase tracking-[0.3em]"
-          style={{ color: '#c9a84c' }}
-        >
-          Let's talk
-        </motion.p>
-
-        <h2
-          className="max-w-3xl font-serif text-5xl font-semibold leading-[1.08] tracking-tight md:text-7xl"
-          style={{ color: textPrimary }}
-        >
-          Have an idea worth<br />
-          <span style={{ fontStyle: 'italic', color: '#c9a84c' }}>building?</span>
-        </h2>
-
-        <p className="mt-8 max-w-xl text-base leading-relaxed" style={{ color: textSecondary }}>
-          I'm currently taking on select freelance work and long-term engagements. If you're building something thoughtful, I'd love to hear about it.
-        </p>
-
-        {/* Email display */}
-        <a
-          href={`mailto:${EMAIL}`}
-          className="mt-10 font-serif text-xl font-medium transition-colors duration-200 md:text-2xl"
-          style={{ color: textPrimary, textDecoration: 'underline', textUnderlineOffset: '8px', textDecorationColor: '#c9a84c' }}
-        >
-          {EMAIL}
-        </a>
-
-        {/* CTA button */}
-        <motion.a
-          href={`mailto:${EMAIL}`}
-          whileHover={{ scale: 1.02, boxShadow: '0 0 0 1px #c9a84c' }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="mt-10 inline-flex items-center gap-3 rounded-full px-8 py-4 text-sm font-medium"
-          style={{
-            backgroundColor: '#c9a84c',
-            color: '#0a0a0a',
-          }}
-        >
-          <Mail size={16} />
-          Send a Message
-        </motion.a>
-
-        {/* Social icons */}
-        <div className="mt-16 flex items-center gap-2">
-          {SOCIALS.map(s => (
-            <motion.a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noreferrer"
-              whileHover={{ scale: 1.1, color: '#c9a84c' }}
-              transition={{ duration: 0.2 }}
-              aria-label={s.label}
-              className="rounded-full p-3 transition-colors duration-200"
-              style={{
-                color: textSecondary,
-                border: `1px solid ${borderColor}`,
-              }}
-            >
-              <s.icon size={18} />
-            </motion.a>
-          ))}
-        </div>
+        <span className="eyebrow text-accent">04 — Contact</span>
+        <span className="h-px flex-1" style={{ backgroundColor: 'var(--border)' }} />
+        <span className="eyebrow">Accepting work · Q2 2026</span>
       </motion.div>
+
+      <div className="grid grid-cols-1 gap-20 md:grid-cols-12">
+        {/* Display headline */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="md:col-span-7"
+        >
+          <h2 className="font-serif-display text-6xl font-medium leading-[0.98] text-ink md:text-[128px]">
+            Have an idea<br />
+            worth <span className="italic text-accent">building?</span>
+          </h2>
+          <p className="mt-10 max-w-lg text-lg leading-relaxed text-ink-muted">
+            I'm currently taking on select freelance work and long-term engagements. If you're building something thoughtful, I'd love to hear about it.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <MagneticButton
+              as="a"
+              href={`mailto:${EMAIL}`}
+              className="group inline-flex items-center gap-3 rounded-full px-7 py-4 text-sm font-medium"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg)' }}
+              data-cursor="link"
+            >
+              <Mail size={16} />
+              Send a Message
+              <ArrowUpRight size={16} />
+            </MagneticButton>
+
+            <button
+              onClick={copy}
+              className="inline-flex items-center gap-3 rounded-full border px-5 py-4 text-sm text-ink-muted transition-colors hover:text-ink"
+              style={{ borderColor: 'var(--border-strong)' }}
+              data-cursor="link"
+            >
+              <AnimatePresence mode="wait">
+                {copied ? (
+                  <motion.span key="c" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="inline-flex items-center gap-2">
+                    <Check size={14} className="text-accent" /> Copied
+                  </motion.span>
+                ) : (
+                  <motion.span key="d" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} className="inline-flex items-center gap-2">
+                    <Copy size={14} /> Copy email
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Side card */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="md:col-span-5"
+        >
+          <div className="rounded-2xl p-8" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <span className="eyebrow">Direct line</span>
+            <a
+              href={`mailto:${EMAIL}`}
+              className="mt-3 block font-serif-display text-3xl font-medium text-ink transition-colors hover:text-accent md:text-4xl"
+              data-cursor="link"
+            >
+              {EMAIL}
+            </a>
+
+            <div className="my-8 h-px w-full" style={{ backgroundColor: 'var(--border)' }} />
+
+            <span className="eyebrow">Elsewhere</span>
+            <div className="mt-4 flex flex-col gap-1">
+              {SOCIALS.map(s => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center justify-between border-b py-3.5 text-ink transition-colors hover:text-accent"
+                  style={{ borderColor: 'var(--border)' }}
+                  data-cursor="link"
+                >
+                  <span className="flex items-center gap-3">
+                    <s.icon size={16} />
+                    <span className="text-base">{s.label}</span>
+                  </span>
+                  <ArrowUpRight size={14} className="text-ink-muted transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+                </a>
+              ))}
+            </div>
+
+            <div className="mt-8 flex items-center gap-2">
+              <span className="relative inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-ring" />
+              <span className="eyebrow">Replying within 24h</span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </section>
   )
 }

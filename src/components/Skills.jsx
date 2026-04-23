@@ -1,94 +1,99 @@
 import { motion } from 'framer-motion'
-import { useTheme } from '../context/ThemeContext'
 
 const SKILL_GROUPS = [
-  {
-    title: 'Frontend',
-    skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Vite'],
-  },
-  {
-    title: 'Backend',
-    skills: ['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'REST APIs', 'Supabase'],
-  },
-  {
-    title: 'Tools',
-    skills: ['Git', 'Docker', 'Vercel', 'Figma', 'Linear', 'Postman'],
-  },
+  { title: 'Frontend', n: '/A', skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Vite'] },
+  { title: 'Backend', n: '/B', skills: ['Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'REST APIs', 'Supabase'] },
+  { title: 'Tools', n: '/C', skills: ['Git', 'Docker', 'Vercel', 'Figma', 'Linear', 'Postman'] },
 ]
 
-const pillVariants = {
+const ALL = [...new Set(SKILL_GROUPS.flatMap(g => g.skills))]
+
+const pill = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 }
-
-const groupVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.05 } },
-}
+const group = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
 
 export default function Skills() {
-  const { theme } = useTheme()
-  const textPrimary = theme === 'dark' ? '#f0efe8' : '#1a1a17'
-  const textSecondary = theme === 'dark' ? '#8a8a7e' : '#5a5a52'
-  const surfaceBg = theme === 'dark' ? '#111111' : '#ebebE4'
-  const borderColor = theme === 'dark' ? '#1e1e1e' : '#d4d3cc'
-
   return (
-    <section id="skills" className="mx-auto max-w-6xl px-6 py-32">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-100px' }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        <div className="mb-12 flex items-center gap-4">
-          <span className="text-xs font-medium uppercase tracking-[0.2em]" style={{ color: '#c9a84c' }}>
-            03 — Stack
-          </span>
-          <span className="h-px flex-1" style={{ backgroundColor: borderColor }} />
+    <section id="skills" className="relative py-32">
+      {/* Marquee ticker */}
+      <div className="relative mb-24 overflow-hidden border-y py-8" style={{ borderColor: 'var(--border)' }}>
+        <div className="marquee-track flex items-center gap-12 whitespace-nowrap">
+          {[...ALL, ...ALL, ...ALL, ...ALL].map((s, i) => (
+            <span key={i} className="flex items-center gap-12">
+              <span className="font-serif-display text-5xl text-ink md:text-6xl">
+                {s}
+              </span>
+              <span className="text-4xl text-accent">✦</span>
+            </span>
+          ))}
         </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32" style={{ background: 'linear-gradient(to right, var(--bg), transparent)' }} />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32" style={{ background: 'linear-gradient(to left, var(--bg), transparent)' }} />
+      </div>
 
-        <h2 className="mb-16 font-serif text-4xl font-semibold leading-tight md:text-5xl" style={{ color: textPrimary }}>
-          Tools of the craft.
-        </h2>
-      </motion.div>
+      {/* Header + groups */}
+      <div className="mx-auto max-w-7xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <div className="mb-10 flex items-center gap-4">
+            <span className="eyebrow text-accent">03 — Stack</span>
+            <span className="h-px flex-1" style={{ backgroundColor: 'var(--border)' }} />
+            <span className="eyebrow">Toolkit / Current</span>
+          </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
-        {SKILL_GROUPS.map((group, idx) => (
-          <motion.div
-            key={group.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5, ease: 'easeOut', delay: idx * 0.1 }}
-          >
-            <h3 className="mb-6 font-serif text-xl font-semibold" style={{ color: textPrimary }}>
-              <span style={{ color: '#c9a84c' }}>—</span> {group.title}
-            </h3>
-            <motion.ul
-              variants={groupVariants}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: '-50px' }}
-              className="flex flex-wrap gap-2"
+          <h2 className="mb-16 max-w-3xl font-serif-display text-5xl font-medium leading-[1.05] text-ink md:text-7xl">
+            Tools of the <span className="italic text-accent">craft.</span>
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
+          {SKILL_GROUPS.map((g, idx) => (
+            <motion.div
+              key={g.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.6, delay: idx * 0.1, ease: 'easeOut' }}
+              className="relative border-t pt-6"
+              style={{ borderColor: 'var(--border)' }}
             >
-              {group.skills.map(s => (
-                <motion.li
-                  key={s}
-                  variants={pillVariants}
-                  className="rounded-full px-4 py-2 text-sm transition-colors duration-200 hover:text-ink-primary"
-                  style={{
-                    backgroundColor: surfaceBg,
-                    border: `1px solid ${borderColor}`,
-                    color: textSecondary,
-                  }}
-                >
-                  {s}
-                </motion.li>
-              ))}
-            </motion.ul>
-          </motion.div>
-        ))}
+              <span className="absolute left-0 top-0 h-px w-12" style={{ backgroundColor: 'var(--accent)' }} />
+              <div className="mb-6 flex items-baseline justify-between">
+                <h3 className="font-serif-display text-2xl font-medium text-ink">{g.title}</h3>
+                <span className="font-mono-editorial text-[10px] text-ink-dim">{g.n}</span>
+              </div>
+              <motion.ul
+                variants={group}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: '-60px' }}
+                className="flex flex-wrap gap-2"
+              >
+                {g.skills.map(s => (
+                  <motion.li
+                    key={s}
+                    variants={pill}
+                    className="rounded-full px-3.5 py-2 text-sm transition-colors hover:text-ink"
+                    style={{
+                      backgroundColor: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--ink-muted)',
+                    }}
+                    data-cursor="link"
+                  >
+                    {s}
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   )
